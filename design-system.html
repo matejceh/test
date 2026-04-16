@@ -175,7 +175,7 @@
     .segment-btn.active { font-weight: 600; border-bottom-color: #fff; }
 
     /* Quick action */
-    .action-icon { width: 44px; height: 44px; background: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+    .action-icon { width: 50px; height: 50px; background: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; }
     .action-label { font-size: 11px; font-weight: 600; color: var(--text); text-align: center; line-height: 1.4em; }
     .action-item { display: flex; flex-direction: column; align-items: center; gap: 5px; }
 
@@ -230,6 +230,22 @@
     /* Menu group title */
     .menu-group-title { font-size: 18px; font-weight: 600; color: var(--text); padding: 32px 16px 16px; }
     .menu-group-title--first { padding-top: 16px; }
+
+    /* Form fields */
+    .pay-field { display: flex; flex-direction: column; gap: 8px; width: 100%; }
+    .pay-field-label { font-size: 14px; color: rgba(68,68,68,0.8); font-weight: 400; }
+    .pay-input-wrap { position: relative; width: 100%; }
+    .pay-input { width: 100%; height: 50px; background: #fff; border: 1px solid #eee; border-radius: 16px; padding: 0 16px; font-family: 'Inter', sans-serif; font-size: 16px; color: #444; outline: none; box-sizing: border-box; }
+    .pay-input:focus { border: 2px solid #2870ed; }
+    .pay-select { width: 100%; height: 50px; background: #fff; border: 1px solid #eee; border-radius: 16px; padding: 0 16px; font-family: 'Inter', sans-serif; font-size: 16px; color: #444; outline: none; appearance: none; -webkit-appearance: none; box-sizing: border-box; cursor: pointer; }
+    .pay-select:focus { border: 2px solid #2870ed; }
+
+    /* Filter tags */
+    .filter-tag { display: inline-flex; align-items: center; justify-content: center; height: 30px; padding: 0 8px; border-radius: 16px; border: 1px solid transparent; background: #2870ed; color: #fff; font-size: 10px; font-weight: 600; cursor: pointer; white-space: nowrap; }
+    .filter-tag.off { background: #fff; color: #2870ed; }
+    .filter-tags-wrap { display: flex; flex-wrap: wrap; gap: 8px; }
+    .filter-pill-container { background: #f4f6fa; border-radius: 8px; padding: 0 16px; }
+    .pill-row { display: flex; justify-content: space-between; align-items: center; height: 32px; cursor: pointer; font-size: 14px; font-weight: 400; color: #444; }
   </style>
 </head>
 <body>
@@ -584,14 +600,15 @@
         </div>
       </div>
       <div class="ds-code">.action-icon {
-  width: 50px; height: 50px;
+  width: 50px; height: 50px; /* 50px circle */
   background: var(--primary);
   border-radius: 50%;
 }
 .action-label {
   font-size: 11px; font-weight: 600;
   text-align: center;
-}</div>
+}
+/* Icon inside: 20×20px img */</div>
     </div>
   </div>
 
@@ -867,6 +884,109 @@ gap: 12px;
     </div>
   </div>
 
+  <!-- ════════ FORM FIELDS ════════ -->
+  <div class="ds-section">
+    <div class="ds-section-title">Form Fields — Payment &amp; Filter screens</div>
+    <div class="ds-grid">
+      <div class="ds-card">
+        <div class="ds-card-title">Text input — .pay-input</div>
+        <div class="ds-preview" style="flex-direction:column;align-items:stretch;">
+          <div class="pay-field">
+            <label class="pay-field-label">Recipient name</label>
+            <div class="pay-input-wrap">
+              <input class="pay-input" type="text" placeholder="Enter name">
+            </div>
+          </div>
+          <div class="pay-field">
+            <label class="pay-field-label">Date from</label>
+            <div class="pay-input-wrap">
+              <input class="pay-input" type="date">
+            </div>
+          </div>
+        </div>
+        <div class="ds-code">.pay-field { display:flex; flex-direction:column; gap:8px; }
+.pay-field-label { font-size:14px; font-weight:400;
+  color: rgba(68,68,68,0.8); }
+.pay-input {
+  height:50px; border-radius:16px;
+  border:1px solid #eee; font-size:16px;
+  padding:0 16px;
+}
+.pay-input:focus { border:2px solid var(--primary); }</div>
+      </div>
+      <div class="ds-card">
+        <div class="ds-card-title">Select with arrow — .pay-select</div>
+        <div class="ds-preview" style="flex-direction:column;align-items:stretch;">
+          <div class="pay-field">
+            <label class="pay-field-label">Document type</label>
+            <div style="position:relative;">
+              <select class="pay-select" style="padding-right:40px;">
+                <option>All types</option>
+                <option>Statements</option>
+                <option>Contracts</option>
+                <option>Other</option>
+              </select>
+              <img src="assets/down-arrow.svg" style="width:16px;height:16px;position:absolute;right:16px;top:50%;transform:translateY(-50%);pointer-events:none;">
+            </div>
+          </div>
+        </div>
+        <div class="ds-code">.pay-select {
+  height:50px; border-radius:16px;
+  border:1px solid #eee; font-size:16px;
+  padding:0 16px; appearance:none;
+}
+/* Arrow overlay */
+&lt;div style="position:relative"&gt;
+  &lt;select style="padding-right:40px"&gt;…&lt;/select&gt;
+  &lt;img src="assets/down-arrow.svg"
+    style="position:absolute; right:16px;
+    top:50%; transform:translateY(-50%);
+    pointer-events:none;"&gt;
+&lt;/div&gt;</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════ FILTER TAGS ════════ -->
+  <div class="ds-section">
+    <div class="ds-section-title">Filter Tags — Statements screen</div>
+    <div class="ds-card">
+      <div class="ds-card-title">Tags + pill in shared gray container</div>
+      <div class="ds-preview" style="flex-direction:column;align-items:stretch;max-width:370px;">
+        <div class="filter-pill-container">
+          <div class="pill-row">
+            <span>Filter by type</span>
+            <img src="assets/down-arrow.svg" style="width:14px;height:14px;display:block;">
+          </div>
+          <div class="filter-tags-wrap" style="padding:8px 0 12px;">
+            <button class="filter-tag">TRR</button>
+            <button class="filter-tag off">Cards</button>
+            <button class="filter-tag off">Cash</button>
+            <button class="filter-tag">Loans</button>
+            <button class="filter-tag off">Savings</button>
+            <button class="filter-tag off">Other</button>
+          </div>
+        </div>
+      </div>
+      <div class="ds-code">/* Shared container */
+background: var(--bg); border-radius:8px;
+padding: 0 16px;
+
+/* Active tag */
+.filter-tag {
+  height:30px; padding:0 8px;
+  border-radius:16px;
+  border:1px solid transparent;
+  background:#2870ed; color:#fff;
+  font-size:10px; font-weight:600;
+}
+/* Inactive tag */
+.filter-tag.off {
+  background:#fff; color:#2870ed;
+}</div>
+    </div>
+  </div>
+
   <!-- ════════ ICONS ════════ -->
   <div class="ds-section">
     <div class="ds-section-title">Icons (assets/)</div>
@@ -925,6 +1045,22 @@ gap: 12px;
         <div style="display:flex;flex-direction:column;align-items:center;gap:6px;">
           <img src="assets/auth.svg" style="width:20px;height:20px;">
           <span style="font-size:10px;color:rgba(68,68,68,0.5);">auth.svg</span>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:6px;">
+          <img src="assets/filter.svg" style="width:18px;height:18px;">
+          <span style="font-size:10px;color:rgba(68,68,68,0.5);">filter.svg</span>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:6px;">
+          <img src="assets/more.svg" style="width:18px;height:18px;">
+          <span style="font-size:10px;color:rgba(68,68,68,0.5);">more.svg</span>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:6px;">
+          <img src="assets/check.svg" style="width:18px;height:18px;">
+          <span style="font-size:10px;color:rgba(68,68,68,0.5);">check.svg</span>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:6px;">
+          <img src="assets/cancel.svg" style="width:18px;height:18px;">
+          <span style="font-size:10px;color:rgba(68,68,68,0.5);">cancel.svg</span>
         </div>
         <div style="display:flex;flex-direction:column;align-items:center;gap:6px;">
           <img src="assets/tab-account.svg" style="width:19px;height:20px;">

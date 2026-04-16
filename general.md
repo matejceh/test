@@ -12,7 +12,7 @@ A mobile banking app prototype built in a single HTML/CSS file (`app.html`) usin
 - Background: `#f4f6fa` — app background
 - Card background: `#fff`
 - Success: `#028661` — positive amounts
-- Danger: `#e12e26` — errors, destructive actions
+- Danger: `#BC3B51` — errors, destructive actions
 - Border: `#eee` / `#ddd`
 
 ### Typography
@@ -45,6 +45,21 @@ A mobile banking app prototype built in a single HTML/CSS file (`app.html`) usin
 - `.detail-row` — flex row for balance display
 - `.section-header` — flex row for section title + see-all link
 
+### Filter Tags
+Used on statements screens. Tags and pill share a gray container (`background:var(--bg); border-radius:8px; padding:0 16px`).
+- `.filter-tag` — active state: `background:#2870ed; color:#fff; border-radius:16px; border:1px solid transparent`
+- `.filter-tag.off` — inactive: `background:#fff; color:#2870ed`
+- `.filter-tags-wrap` — hidden by default (`max-height:0; overflow:hidden`), reveals on `.open` with `max-height:200px; padding:8px 0 12px`
+- `.pill` — dropdown trigger row (`height:32px; background:var(--bg); border-radius:8px`); `.pill.open .pill-arrow` rotates 180°
+
+### Payment Form Fields
+Used on New payment, Quick pay, and Statements filter screens.
+- `.pay-field` — column wrapper with `gap:8px`
+- `.pay-field-label` — `14px/400`, `color:var(--text-muted)`
+- `.pay-input` — `height:50px; border-radius:16px; border:1px solid var(--input-border); font-size:16px`; focus: `border:2px solid var(--primary)`
+- `.pay-select` — same sizing as `.pay-input`, native `<select>` element; wrap in `position:relative` div with `padding-right:40px` and overlay `down-arrow.svg` at `right:16px` for custom arrow
+- `.pay-input-wrap` — `position:relative; width:100%` wrapper for inputs
+
 ### Assets
 All images and icons stored in `assets/`:
 - `logo.svg` — Sparkasse logo (nav bar)
@@ -52,6 +67,7 @@ All images and icons stored in `assets/`:
 - `tab-account.svg`, `tab-card.svg`, `tab-offers.svg`, `tab-menu.svg` — tab bar icons (inline SVGs)
 - `auth.svg` — Authorization quick action icon (business client)
 - `new-pay.svg`, `photopay.svg`, `quick-pay.svg` — quick action icons
+- `new-pay-primary.svg` — new payment icon in primary color variant
 - `flik.svg` — Flik quick action icon (retail client)
 - `details.svg` — account card menu button
 - `down-arrow.svg` — balance dropdown + package pill arrow
@@ -60,6 +76,17 @@ All images and icons stored in `assets/`:
 - `backspace.svg` — PIN screen delete key
 - `banner.jpg` — banner background photo
 - `mastercard.svg` — Mastercard logo
+- `filter.svg` — filter icon (statements nav bar)
+- `date.svg` — date input icon
+- `pen.svg` — edit/change icon
+- `more.svg` — more options icon
+- `check.svg` — checkmark icon
+- `check-account.svg` — account check icon
+- `cancel.svg` — cancel icon
+- `save-as-quick.svg` — save as quick payment icon
+- `partners.svg` — partners icon
+- `statements_documents.svg` — statements & documents icon
+- `add-to-apple-wallet.svg` — Apple Wallet icon
 
 **Menu icons** — stored in `assets/menu/`:
 - `new-payment.svg`, `quik-pay.svg`, `photopay.svg`, `flik.svg` — Payments group (first 4)
@@ -78,16 +105,20 @@ All images and icons stored in `assets/`:
 ---
 
 ## Dev Nav
-Clicking the Dynamic Island opens a floating panel with screen shortcuts:
-- Home (John Doe) + children: Account detail, Account transactions, Transaction detail
-- Home (Company)
-- Select client
-- Cards + children: Card detail, Safety settings
-- Offers
-- Menu
-- Payment type + children: Quick pay, New payment (step 1), Review (step 2), PIN (auth), Sent (step 3), Partners
-- Toggle dark mode
-- Language toggle (EN / SI)
+Clicking the Dynamic Island opens a floating panel with screen shortcuts.
+
+**Main tabs:** Home, Cards, Offers, Menu
+
+**Sub-pages — Home group:**
+- Account detail, Transactions, Txn detail, Home (Company), Select client
+
+**Sub-pages — Cards/Menu group:**
+- Card detail, Card txns, Safety settings, Accounts list, Menu cards, Statements, Statements filter
+
+**Payment flows:**
+- Photo pay, Pay type, Quick pay, New pay, Review, PIN, Sent, Partners
+
+**Utilities:** Language toggle (EN / SI), Dark mode toggle, Flow summary toggle
 
 ---
 
@@ -180,6 +211,12 @@ Clicking any type calls `selectPaymentType(type)` → `openNewPayment(origin)`
 
 ---
 
+## Photo Pay Screen (`#photo-pay-screen`)
+
+Dark fullscreen camera view with a scan frame (220×220px corner brackets) and animated scan line. Bottom area has "Import image" button and "Cancel" text button. Both close the screen via `closePhotoPay()`.
+
+---
+
 ## Quick Pay Screen (`#quick-pay-screen`)
 
 ### Nav
@@ -267,6 +304,12 @@ Options: Details, Transactions, Safety settings, Cancel.
 
 ---
 
+## Menu Cards Screen (`#menu-cards`)
+
+Cards list accessible from Menu → Products → Cards. Same card list and action sheet as the Cards tab. Back → Menu tab. Uses `openMenuCards()` / `closeMenuCardSheet()`.
+
+---
+
 ## Card Detail Screen (`#card-detail`)
 
 Back + "Card details" title. Editable nickname (dialog). Safety settings shortcut. Monthly limit.
@@ -276,6 +319,12 @@ Back + "Card details" title. Editable nickname (dialog). Safety settings shortcu
 ## Safety Settings Screen (`#safety-settings`)
 
 Toggle rows: Block card, Online shopping, ATM withdrawals, Use outside Slovenia.
+
+---
+
+## Card Transactions Screen (`#card-transactions`)
+
+Back + "Card transactions" title. Transaction list rendered into `#card-tx-list`. Opened via `openCardTransactions()` / `openCardTransactionsFromMenu()`.
 
 ---
 
@@ -301,8 +350,14 @@ Static HTML. Two groups inside panels.
 9. Verify online payments
 
 ### Products group (2 items)
-1. Accounts
-2. Cards
+1. Accounts → `openAccountsList()`
+2. Cards → `openMenuCards()`
+
+---
+
+## Accounts List Screen (`#accounts-list`)
+
+Back + "Accounts" title. Account list rendered into `#accounts-list-content`. Tapping an account opens an action sheet: Details → `accountListSheetDetails()`, Transactions → `accountListSheetTransactions()`.
 
 ---
 
@@ -327,6 +382,46 @@ Three groups: Pay from, Pay to, Payment. Populated via `openTransactionDetail(ac
 ## Partners Screen (`#partners`)
 
 List of saved payment partners. Selecting one pre-fills new payment form.
+
+---
+
+## Statements & Documents Screen (`#statements`)
+
+### Nav
+- Back button + "Statements & documents" title + filter icon button → `openStatementsFilterScreen()`
+
+### Filter Area
+Tags and pill share a gray container (`background:var(--bg); border-radius:8px; padding:0 16px`):
+- Pill row ("Filter by type") toggles tag visibility via `toggleStatementsFilter()`
+- Tags: TRR, Cards, Cash, Loans, Savings, Other — toggle via `toggleStatementsTag(el, category)`
+- Active tags: blue fill; inactive: white fill; both have `border:1px solid transparent`
+
+### Content
+Flat list of document entries (`data-category` attribute). Active tag selection filters visible items.
+
+---
+
+## Statements Filter Screen (`#statements-filter`)
+
+### Nav
+- Back button + "Filter" title
+
+### Content
+Single panel with four fields:
+1. **Date from** — `type="date"` opens system OS date picker
+2. **Date to** — `type="date"` opens system OS date picker
+3. **Document type** — `<select>` with options: All types, Statements, Contracts, Other; custom arrow overlay (`down-arrow.svg`)
+4. **Subject / name of document** — text input
+
+### Navigation
+- Back button → `closeStatementsFilterScreen()` → returns to `#statements`
+- "Filter" button (`.btn-main`) → same as back (dummy, no filtering logic)
+
+---
+
+## Statements 2 Screen (`#statements-2`)
+
+Alternative statements screen variant with filter using toggle rows inside a pill dropdown instead of tag pills. Uses `openStatements2()` / `closeStatements2()` / `toggleS2Filter()` / `toggleS2Category(category, input)`.
 
 ---
 
@@ -366,14 +461,18 @@ All press states use `:active` pseudo-class.
 - Home: node-id `2125-523`
 - Cards: node-id `2021-1622`
 - PIN screen: node-id `2690-674`
+- Statements filter: node-id `2786-1509`
 
 ---
 
 ## Screens Status
 - [x] Home (`app.html`)
 - [x] Cards (`app.html`)
+- [x] Menu cards (`app.html`)
 - [x] Card detail (`app.html`)
+- [x] Card transactions (`app.html`)
 - [x] Safety settings (`app.html`)
+- [x] Photo pay (`app.html`)
 - [x] Payment type screen (`app.html`)
 - [x] Quick pay screen (`app.html`)
 - [x] New payment step 1 (`app.html`)
@@ -382,9 +481,13 @@ All press states use `:active` pseudo-class.
 - [x] Payment sent step 3 (`app.html`)
 - [x] Select client (`app.html`)
 - [x] Partners (`app.html`)
+- [x] Accounts list (`app.html`)
 - [x] Offers (`app.html`)
 - [x] Menu (`app.html`)
 - [x] Account detail (`app.html`)
 - [x] Account transactions (`app.html`)
 - [x] Transaction detail (`app.html`)
+- [x] Statements & documents (`app.html`)
+- [x] Statements filter (`app.html`)
+- [x] Statements 2 (`app.html`)
 - [x] Design system (`design-system.html`)

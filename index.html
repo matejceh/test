@@ -22,13 +22,9 @@
       --text-faint: rgba(68,68,68,0.5);
       --border-strong: #ddd;
       --toggle-track-bg: rgba(60,60,67,0.3);
-      --glass-bg: rgba(245,245,245,0.6);
       --overlay-bg: rgba(68,68,68,0.8);
       --menu-hover: rgba(68,68,68,0.06);
       --input-border: #444;
-      --action-btn-bg: #0088ff;
-      --cancel-btn-bg: rgba(120,120,128,0.16);
-      --cancel-btn-text: #000;
       --danger: #BC3B51;
       --nav-bg: var(--primary);
       --dev-nav-bg: #fff;
@@ -313,13 +309,6 @@
     .balance-amount {
       font-size: 30px;
       font-weight: 700;
-      color: var(--text);
-      line-height: 1em;
-    }
-
-    .balance-amount-sm {
-      font-size: 22px;
-      font-weight: 500;
       color: var(--text);
       line-height: 1em;
     }
@@ -933,37 +922,14 @@
       padding: 0;
       max-height: 0;
       overflow: hidden;
-      transition: max-height 0.3s ease, padding 0.3s ease, border-color 0s 0.3s;
-      border-bottom: 1px solid transparent;
+      transition: max-height 0.3s ease, padding 0.3s ease;
     }
 
     .filter-tags-wrap.open {
       max-height: 200px;
-      padding: 12px 0;
-      border-bottom-color: var(--border);
+      padding: 8px 0 12px;
       transition: max-height 0.3s ease, padding 0.3s ease;
     }
-
-    .filter-badge {
-      display: none;
-      position: absolute;
-      top: -3px;
-      right: -3px;
-      min-width: 16px;
-      height: 16px;
-      padding: 0 3px;
-      background: var(--primary);
-      border-radius: 8px;
-      font-size: 9px;
-      font-weight: 700;
-      color: #fff;
-      align-items: center;
-      justify-content: center;
-      line-height: 1;
-      pointer-events: none;
-    }
-
-    .filter-badge.visible { display: flex; }
 
     .filter-tag {
       display: inline-flex;
@@ -972,7 +938,7 @@
       height: 30px;
       padding: 0 8px;
       border-radius: 16px;
-      border: 1px solid #2870ed;
+      border: 1px solid transparent;
       background: #2870ed;
       color: #fff;
       font-size: 10px;
@@ -1559,13 +1525,9 @@
       --text-faint: #525b72;
       --border-strong: #2c3245;
       --toggle-track-bg: rgba(180,185,200,0.25);
-      --glass-bg: rgba(18,22,32,0.88);
       --overlay-bg: rgba(8,10,16,0.85);
       --menu-hover: rgba(255,255,255,0.06);
       --input-border: #4a5263;
-      --action-btn-bg: #3b82f6;
-      --cancel-btn-bg: rgba(180,185,200,0.15);
-      --cancel-btn-text: #e4e7f0;
       --danger: #ff8a96;        /* 5.8:1 on --surface  ✓ AA */
       --nav-bg: #1c2540;
       --dev-nav-bg: #252a36;
@@ -1679,6 +1641,7 @@
           <button class="dev-nav-btn" onclick="devGo(openAccountsList)">Accounts list</button>
           <button class="dev-nav-btn" onclick="devGo(openMenuCards)">Menu cards</button>
           <button class="dev-nav-btn" onclick="devGo(()=>openStatements('accounts-list'))">Statements</button>
+          <button class="dev-nav-btn" onclick="devGo(openStatementsFilterScreen)">Statements filter</button>
         </div>
       </div>
 
@@ -2569,7 +2532,7 @@
           <img src="assets/back.svg" style="width:10px;height:16px;display:block;">
         </button>
         <span class="nav-title" style="font-size:16px;font-weight:600;color:#fff;">Statements &amp; documents</span>
-        <button class="profile-btn">
+        <button class="profile-btn" onclick="openStatementsFilterScreen()">
           <img src="assets/filter.svg" style="width:18px;height:18px;display:block;">
         </button>
       </div>
@@ -2579,18 +2542,20 @@
     <div class="scroll-area">
       <div class="panel panel-list">
         <div style="padding:14px 0;border-bottom:1px solid var(--border);">
-          <div class="pill" id="statements-filter-pill" onclick="toggleStatementsFilter()" style="display:flex;justify-content:space-between;width:100%;box-sizing:border-box;">
-            <span>Filter by type</span>
-            <img class="pill-arrow" src="assets/down-arrow.svg" style="width:14px;height:14px;display:block;">
+          <div style="background:var(--bg);border-radius:8px;padding:0 16px;">
+            <div class="pill" id="statements-filter-pill" onclick="toggleStatementsFilter()" style="display:flex;justify-content:space-between;width:100%;box-sizing:border-box;padding-left:0;padding-right:0;">
+              <span>Filter by type</span>
+              <img class="pill-arrow" src="assets/down-arrow.svg" style="width:14px;height:14px;display:block;">
+            </div>
+            <div class="filter-tags-wrap" id="statements-filter-tags">
+              <button class="filter-tag off" data-cat="transakcijski-racun" onclick="toggleStatementsTag(this,'transakcijski-racun')">TRR</button>
+              <button class="filter-tag off" data-cat="kartice" onclick="toggleStatementsTag(this,'kartice')">Cards</button>
+              <button class="filter-tag off" data-cat="blagajna" onclick="toggleStatementsTag(this,'blagajna')">Cash</button>
+              <button class="filter-tag off" data-cat="krediti" onclick="toggleStatementsTag(this,'krediti')">Loans</button>
+              <button class="filter-tag off" data-cat="varcevanje" onclick="toggleStatementsTag(this,'varcevanje')">Savings</button>
+              <button class="filter-tag off" data-cat="ostalo" onclick="toggleStatementsTag(this,'ostalo')">Other</button>
+            </div>
           </div>
-        </div>
-        <div class="filter-tags-wrap" id="statements-filter-tags">
-          <button class="filter-tag off" data-cat="transakcijski-racun" onclick="toggleStatementsTag(this,'transakcijski-racun')">Transakcijski račun</button>
-          <button class="filter-tag off" data-cat="kartice" onclick="toggleStatementsTag(this,'kartice')">Kartice</button>
-          <button class="filter-tag off" data-cat="blagajna" onclick="toggleStatementsTag(this,'blagajna')">Blagajna / gotovinsko poslovanje</button>
-          <button class="filter-tag off" data-cat="krediti" onclick="toggleStatementsTag(this,'krediti')">Krediti</button>
-          <button class="filter-tag off" data-cat="varcevanje" onclick="toggleStatementsTag(this,'varcevanje')">Varčevanje in naložbe</button>
-          <button class="filter-tag off" data-cat="ostalo" onclick="toggleStatementsTag(this,'ostalo')">Ostalo</button>
         </div>
         <div class="list-item" data-category="transakcijski-racun">
           <div class="list-item-left">
@@ -2629,6 +2594,67 @@
           </div>
         </div>
       </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════ STATEMENTS FILTER ═══════════════ -->
+  <div class="screen" id="statements-filter">
+    <div class="nav">
+      <div class="status-bar">
+        <span>9:41</span>
+        <div class="status-icons">
+          <svg width="16" height="12" viewBox="0 0 16 12" fill="white"><rect x="0" y="8" width="3" height="4" rx="0.5"/><rect x="4" y="5" width="3" height="7" rx="0.5"/><rect x="8" y="2" width="3" height="10" rx="0.5"/><rect x="12" y="0" width="3" height="12" rx="0.5" opacity="0.35"/></svg>
+          <svg width="15" height="12" viewBox="0 0 15 12" fill="white"><path d="M7.5 9.5a1 1 0 1 0 0 2 1 1 0 0 0 0-2z"/><path d="M4.8 7.2a3.8 3.8 0 0 1 5.4 0l1.1-1.1a5.3 5.3 0 0 0-7.6 0l1.1 1.1z"/><path d="M2.1 4.5a7.6 7.6 0 0 1 10.8 0L14 3.4A9.1 9.1 0 0 0 1 3.4l1.1 1.1z"/></svg>
+          <svg width="22" height="12" viewBox="0 0 22 12" fill="white"><rect x="0" y="1" width="19" height="10" rx="2" stroke="white" stroke-width="1.2" fill="none"/><rect x="1.5" y="2.5" width="14" height="7" rx="1" fill="white"/><path d="M20 4.5v3a1.5 1.5 0 0 0 0-3z"/></svg>
+        </div>
+      </div>
+      <div class="nav-bottom">
+        <button class="profile-btn" onclick="closeStatementsFilterScreen()">
+          <img src="assets/back.svg" style="width:10px;height:16px;display:block;">
+        </button>
+        <span class="nav-title" style="font-size:16px;font-weight:600;color:#fff;">Filter</span>
+        <div style="width:36px;"></div>
+      </div>
+    </div>
+
+    <div class="scroll-area">
+      <div class="panel" style="padding:20px 16px;display:flex;flex-direction:column;gap:16px;">
+          <div class="pay-field">
+            <label class="pay-field-label">Date from</label>
+            <div class="pay-input-wrap">
+              <input type="date" class="pay-input" id="sf-date-from">
+            </div>
+          </div>
+          <div class="pay-field">
+            <label class="pay-field-label">Date to</label>
+            <div class="pay-input-wrap">
+              <input type="date" class="pay-input" id="sf-date-to">
+            </div>
+          </div>
+          <div class="pay-field">
+            <label class="pay-field-label">Document subtype</label>
+            <div style="position:relative;">
+              <select class="pay-select" id="sf-subtype" style="padding-right:40px;">
+                <option value="">All types</option>
+                <option value="statements">Statements</option>
+                <option value="contracts">Contracts</option>
+                <option value="other">Other</option>
+              </select>
+              <img src="assets/down-arrow.svg" style="width:16px;height:16px;position:absolute;right:16px;top:50%;transform:translateY(-50%);pointer-events:none;">
+            </div>
+          </div>
+          <div class="pay-field">
+            <label class="pay-field-label">Subject / name of document</label>
+            <div class="pay-input-wrap">
+              <input type="text" class="pay-input" id="sf-name">
+            </div>
+          </div>
+      </div>
+    </div>
+
+    <!-- Filter button -->
+    <div style="padding:16px;padding-bottom:24px;">
+      <button class="btn-main" onclick="closeStatementsFilterScreen()">Filter</button>
     </div>
   </div>
 
@@ -4033,6 +4059,14 @@ function openCardDetail() {
 
   function closeStatements() {
     switchTab(statementsOrigin, -1);
+  }
+
+  function openStatementsFilterScreen() {
+    switchTab('statements-filter', -1);
+  }
+
+  function closeStatementsFilterScreen() {
+    switchTab('statements', -1);
   }
 
   function toggleStatementsFilter() {
