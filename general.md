@@ -59,12 +59,13 @@ Used on New payment, Quick pay, and Statements filter screens.
 - `.pay-input` — `height:50px; border-radius:16px; border:1px solid var(--input-border); font-size:16px`; focus: `border:2px solid var(--primary)`
 - `.pay-select` — same sizing as `.pay-input`, native `<select>` element; wrap in `position:relative` div with `padding-right:40px` and overlay `down-arrow.svg` at `right:16px` for custom arrow
 - `.pay-input-wrap` — `position:relative; width:100%` wrapper for inputs
+- **`--input-border: #444`** — all payment inputs use `#444` border (not `#eee`)
 
 ### Assets
 All images and icons stored in `assets/`:
 - `logo.svg` — Sparkasse logo (nav bar)
 - `profile-ico.svg` — profile button icon
-- `tab-account.svg`, `tab-card.svg`, `tab-offers.svg`, `tab-menu.svg` — tab bar icons (inline SVGs)
+- `tab-account.svg`, `tab-card.svg`, `tab-offers.svg`, `tab-menu.svg` — tab bar icon references (design-system.html only; app.html uses inline SVGs)
 - `auth.svg` — Authorization quick action icon (business client)
 - `new-pay.svg`, `photopay.svg`, `quick-pay.svg` — quick action icons
 - `new-pay-primary.svg` — new payment icon in primary color variant
@@ -101,24 +102,6 @@ All images and icons stored in `assets/`:
 - Side buttons: Action, Volume Up/Down (left), Power (right)
 - Home indicator bar at bottom
 - Screen area inset 14px on all sides, border-radius 42px
-
----
-
-## Dev Nav
-Clicking the Dynamic Island opens a floating panel with screen shortcuts.
-
-**Main tabs:** Home, Cards, Offers, Menu
-
-**Sub-pages — Home group:**
-- Account detail, Transactions, Txn detail, Home (Company), Select client
-
-**Sub-pages — Cards/Menu group:**
-- Card detail, Card txns, Safety settings, Accounts list, Menu cards, Statements, Statements filter
-
-**Payment flows:**
-- Photo pay, Pay type, Quick pay, New pay, Review, PIN, Sent, Partners
-
-**Utilities:** Language toggle (EN / SI), Dark mode toggle, Flow summary toggle
 
 ---
 
@@ -213,7 +196,9 @@ Clicking any type calls `selectPaymentType(type)` → `openNewPayment(origin)`
 
 ## Photo Pay Screen (`#photo-pay-screen`)
 
-Dark fullscreen camera view with a scan frame (220×220px corner brackets) and animated scan line. Bottom area has "Import image" button and "Cancel" text button. Both close the screen via `closePhotoPay()`.
+Dark fullscreen camera view (`background:#111`) with a scan frame (220×220px corner brackets), animated scan line, and "Align QR code within the frame" hint text. Bottom area has "Import image" button and "Cancel" text button.
+
+Both buttons close via `closePhotoPay()`, which returns to the origin (`home` or `menu`) based on `photoPayOrigin`. Opened via `openPhotoPay(origin)`.
 
 ---
 
@@ -225,7 +210,11 @@ Dark fullscreen camera view with a scan frame (220×220px corner brackets) and a
 ### Content
 List of 5 templates (`.item-text`, font-weight 400). Clicking any calls `selectQuickPay(index)` which opens New payment step 1 with all fields pre-filled.
 
-**Templates:** Rent, Electricity, Gym, Internet, Loan repayment
+**Templates:** Rent – Stanovanje Ljubljana, Electricity – Elektro Ljubljana, Gym – FitPass mesečnina, Internet – Telekom SLO, Loan repayment – NLB
+
+Templates are defined inline in app.html as `quickPayTemplates[]` (not in data.js). Each has: `name`, `account`, `toName`, `amount`, `details`, `ref`, `check`, `purpose`.
+
+**Note:** `closeQuickPay()` always returns to Home regardless of entry origin.
 
 ---
 
@@ -235,11 +224,31 @@ List of 5 templates (`.item-text`, font-weight 400). Clicking any calls `selectQ
 - Back button + "New payment" title + step indicator (1. Prepare · 2. Review · 3. Sent)
 
 ### Content
-Two groups (Pay from, Pay to, Payment) with labeled input fields.
+Three groups: Pay from, Pay to, Payment.
+
+**Pay from:**
+- Debit account: custom dropdown (`.pay-debit-wrap` / `.pay-debit-trigger` / `.pay-debit-dropdown`) — `toggleDebitDropdown()`, `selectDebitAccount(name, iban)`
+
+**Pay to:**
+- Account: SI56 prefix input (`.pay-input-prefix-wrap` + `.pay-input--prefixed`) with partner autocomplete (`partnerAutocomplete(input, 'iban')`) + Partners link
+- Name: text input with partner autocomplete (`partnerAutocomplete(input, 'name')`) + "Check account" link
+- Autocomplete dropdown (`.pay-autocomplete` / `.pay-autocomplete-item`) appears after 3 chars, max 5 results; `applyPartner(name, iban)` fills both fields
+
+**Payment:**
+- Instant / Urgent toggles (mutually exclusive, `onPaymentToggle(active)`)
+- Execution date: `type="date"` with `date.svg` icon overlay
+- Amount: decimal input
+- Creditor reference: type select (SI / RF / NRC) + `.pay-input-sm` check field (72px) + ref input — when NRC selected, check+ref hidden (`toggleCreditorInputs()`)
+- Purpose code: select from `purposeCodes` — `fillPurposeDetails()` auto-fills Details on change
+- Details: text input
+
+**Validation** (`validatePayment()`): required fields get `.error` class + `.pay-error-msg` below. `clearPayError(el)` removes on input.
+
+**Input borders**: `--input-border: #444` (not `#eee`) for all `.pay-input`, `.pay-input-sm`, `.pay-input-prefix-wrap`, `.pay-select`
 
 ### Navigation
-- Back → Payment type screen
-- Next (validate) → Review (step 2)
+- Back → Payment type screen (`closeNewPayment()`)
+- Next → `validatePayment()` → `openReview()` if valid
 
 ---
 
@@ -297,10 +306,12 @@ Same as Home (profile icon + logo)
 ### Card List
 Panels with card info. Tap → action sheet.
 
-#### Card Action Sheet (iOS 26 Liquid Glass)
+#### Card Action Sheet (iOS native)
 Options: Details, Transactions, Safety settings, Cancel.
-- Overlay: `rgba(0,0,0,0.25)` + `backdrop-filter: blur(6px)`
-- Sheet: `border-radius: 34px`, `backdrop-filter: blur(40px) saturate(180%)`
+- Overlay (`.action-sheet-overlay`): `rgba(0,0,0,0.4)`, slides up from bottom (`translateY` animation, 0.35s cubic-bezier)
+- Each group (`.action-sheet-group`): `background: var(--surface); border-radius: 14px; overflow: hidden; margin-bottom: 8px`
+- Buttons (`.action-sheet-btn`): full-width, `border-top: 0.5px solid var(--border)`, `color: var(--primary)`, 56px height, first button has no border-top
+- Cancel (`.action-sheet-cancel`): `font-weight: 600`
 
 ---
 
@@ -349,9 +360,10 @@ Static HTML. Two groups inside panels.
 8. E-invoices
 9. Verify online payments
 
-### Products group (2 items)
+### Products group (3 items)
 1. Accounts → `openAccountsList()`
 2. Cards → `openMenuCards()`
+3. Statements & documents → `openStatements('menu-tab')`
 
 ---
 
@@ -369,19 +381,43 @@ Back + "Account details". Editable nickname updates carousel label via `appData.
 
 ## Account Transactions Screen (`#account-transactions`)
 
-Segment control: Waiting room | Archive (default) | Rejected. Opened from "See all" on home carousel.
+Segment control: Waiting room | Archive (default) | Rejected. Opened from "See all" on home carousel or from Accounts list.
+
+Archive tab has an optional **TX Flow Summary** (`.tx-flow-summary`) showing inflow/outflow for the month — hidden by default, toggled via dev nav "Flow" button (`toggleFlowSummary()`). Shows `.tx-flow-month` label + two `.tx-flow-card` panels with `.tx-flow-amount.inflow` and `.tx-flow-amount.outflow`.
+
+Transaction rows use `.tx-item-lg` (taller than home carousel `.tx-item`): 12px padding, truncated date+name, full-width clickable. Clicking any row opens the global `#tx-action-sheet` via `openTxActionSheetFromList(...)`.
+
+`openAccountTransactions(origin)` sets `accountTxOrigin`; `closeAccountTransactions()` returns to `origin` ('home' or 'accounts-list').
 
 ---
 
 ## Transaction Detail Screen (`#transaction-detail`)
 
-Three groups: Pay from, Pay to, Payment. Populated via `openTransactionDetail(accIdx, txIdx)`.
+Three groups: Debtor, Creditor, Payment.
+
+**Debtor:** Name, Address, Account, Bank, Debtor reference  
+**Creditor:** Name, Address, Account, Bank  
+**Payment:** Amount, Date, Status, Purpose code, Details
+
+Status colors: Completed (`--text`), Received (`--success`), Waiting (`--text-muted`), Rejected (`--danger`)
+
+Floating action button (`.tx-detail-fab`, 52px circle, `var(--primary)`) at bottom-right opens `#tx-detail-action-sheet` with options: Create payment, Confirmation, Cancel.
+
+Entry points:
+- Home carousel tx item → `openTxActionSheet(accIdx, txIdx)` → action sheet → "Details" → `openTransactionDetail(accIdx, txIdx)`
+- Account transactions list item → `openTxActionSheetFromList(name, date, amount, isPositive, status, mockIdx)` → action sheet → "Details" → `_populateTransactionDetail(...)` (uses inline `txMockData` for extra fields)
+
+`closeTransactionDetail()` returns to `txDetailOrigin` ('home' or 'account-transactions').
 
 ---
 
 ## Partners Screen (`#partners`)
 
-List of saved payment partners. Selecting one pre-fills new payment form.
+Search input + list of saved payment partners. `filterPartners()` filters by name or IBAN. Selecting one calls `selectPartner(name, iban)` which pre-fills `pay-account` and `pay-name` in the New Payment form.
+
+20 partners defined inline in app.html as `partnersData[]` (not in data.js). Each has `name` and `iban`.
+
+Partners are also accessible via autocomplete in the New Payment form (typed IBAN or name after 3 chars).
 
 ---
 
@@ -447,9 +483,132 @@ Used by `selectClient(index)` to swap `appData`.
 
 ---
 
+## Transaction Action Sheet (`#tx-action-sheet`)
+
+Global sheet accessible from both home carousel transaction rows and account transaction list items.
+
+**Options:** Create payment, Confirmation, Details  
+**Cancel group:** Cancel (separate `.action-sheet-group`)
+
+- "Create payment" → `txActionSheetCreatePayment()` → `openNewPayment('home')`
+- "Details" → `txActionSheetDetails()` → opens Transaction Detail (routes to `openTransactionDetail` or `_populateTransactionDetail` based on `_txActionArgs.type`)
+
+---
+
+## Dialogs (iOS native)
+
+`.dialog-overlay` wraps the dialog, shows via `.open` class. Dialog animates in with scale(1.08)→scale(1) + opacity.
+
+```
+.dialog { background: var(--surface); border-radius: 14px; box-shadow: 0 4px 30px rgba(0,0,0,0.3); }
+.dialog-body { padding: 20px 16px 16px; text-align: center; }
+.dialog-title { font-size: 17px; font-weight: 600; }
+.dialog-input { border: 1px solid var(--input-border); border-radius: 8px; font-size: 16px; }
+.dialog-buttons { display: flex; border-top: 0.5px solid var(--border); }
+.dialog-btn { flex: 1; background: transparent; height: 44px; font-size: 17px; color: var(--primary); }
+.dialog-btn + .dialog-btn { border-left: 0.5px solid var(--border); }
+.dialog-btn-cancel { font-weight: 400; }
+.dialog-btn-confirm { font-weight: 600; }
+```
+
+Cancel dialog ("Yes" to cancel payment): "Yes" button uses `color: var(--danger)` only, no background.
+
+---
+
+## Dark Mode
+
+Toggled via dev nav "◐ Dark" button (`toggleDarkMode()`). Sets `data-theme="dark"` on `<html>`.
+
+Overrides all CSS variables:
+```css
+[data-theme="dark"] {
+  --primary: #6ba4fa;     --text: #e4e7f0;      --bg: #1a1e27;
+  --success: #3ecf96;     --border: #2c3245;    --body-bg: #0f1218;
+  --surface: #252a36;     --text-muted: #8b95ad; --text-faint: #525b72;
+  --border-strong: #2c3245; --input-border: #4a5263; --danger: #ff8a96;
+  --nav-bg: #1c2540;      --icon-fill: #e4e7f0;
+  --overlay-bg: rgba(8,10,16,0.85);
+}
+```
+
+Icon images on light surfaces are inverted: `.icon-circle-sm img`, `.menu-btn img`, `.list-item-right img`, `.menu-list-item img` get `filter: invert(1) brightness(0.85)` in dark mode.
+
+---
+
+## Additional CSS Classes
+
+### Transaction Item Large (`.tx-item-lg`)
+Used in account transactions and card transactions lists. Taller than home `.tx-item`:
+```
+.tx-item-lg { display:flex; align-items:center; gap:4px; padding:12px 16px;
+  border-bottom:1px solid var(--border); cursor:pointer; }
+.tx-item-lg-left { flex:1; min-width:0; display:flex; flex-direction:column; gap:4px; }
+/* date + name truncated with text-overflow: ellipsis */
+```
+
+### TX Flow Summary (`.tx-flow-summary`)
+White panel above archive transaction list, hidden by default:
+```
+.tx-flow-summary { background:var(--surface); border-radius:12px;
+  display:grid; grid-template-columns:1fr 1px 1fr; margin-bottom:8px; }
+.tx-flow-card { padding:12px 14px; display:flex; flex-direction:column; align-items:center; gap:3px; }
+.tx-flow-label { font-size:11px; font-weight:500; color:var(--text-muted); }
+.tx-flow-amount { font-size:15px; font-weight:600; }
+.tx-flow-amount.inflow { color: var(--success); }
+.tx-flow-amount.outflow { color: var(--danger); }
+.tx-flow-month { font-size:11px; font-weight:600; color:var(--text-muted); margin-bottom:4px; }
+```
+
+### Icon Circle Small (`.icon-circle-sm`)
+24px circle with `var(--bg)` background. Used for balance toggle and eye/blur toggle:
+```
+.icon-circle-sm { width:24px; height:24px; background:var(--bg); border-radius:50%;
+  display:flex; align-items:center; justify-content:center; cursor:pointer; }
+```
+
+### Transaction Detail FAB (`.tx-detail-fab`)
+```
+.tx-detail-fab { position:absolute; bottom:24px; right:16px; width:52px; height:52px;
+  border-radius:50%; background:var(--primary);
+  box-shadow:0 4px 16px rgba(40,112,237,0.35); z-index:10; }
+.tx-detail-fab img { width:22px; height:22px; filter:brightness(0) invert(1); }
+```
+
+### Pay Input Variants
+- `.pay-input-prefix-wrap`: flex row wrapper for inputs with a text prefix (e.g. "SI56")
+- `.pay-input-prefix`: the prefix text (`padding: 0 6px 0 16px; font-size:15px`)
+- `.pay-input--prefixed`: the input inside prefix-wrap (no border, fills remaining space)
+- `.pay-input-sm`: 72px wide input for creditor check digit (`text-align:center`)
+- `.pay-debit-trigger`: styled like an input, shows selected account name+IBAN
+- `.pay-debit-dropdown`: dropdown list of debit account options
+- `.pay-autocomplete`: dropdown for partner name/IBAN suggestions
+- `.pay-review`: applied to `#payment-review` and `#payment-sent` screens — makes all inputs read-only appearance (`background:var(--bg); border-color:transparent`)
+- `.pay-error-msg`: `font-size:12px; color:var(--danger)` error text below field
+
+---
+
+## Dev Nav
+
+Clicking the Dynamic Island opens a floating panel with screen shortcuts.
+
+**Main tabs:** Home, Cards, Offers, Menu (2×2 grid)
+
+**Sub-pages — Home group:**
+- Account detail, Transactions, Txn detail, Home (Company), Select client
+
+**Sub-pages — Cards/Menu group:**
+- Card detail, Card txns, Safety settings, Accounts list, Menu cards, Statements, Statements filter
+
+**Payment flows:**
+- Photo pay, Pay type, Quick pay, New pay, Review, PIN, Sent, Partners
+
+**Utilities:** Language toggle (EN / SI), Dark mode toggle (`toggleDarkMode()`), Flow summary toggle (`toggleFlowSummary()`)
+
+---
+
 ## Shadows
 - Panel / card: `4px 0 20px 0 rgba(68,68,68,0.1)`
-- Dialog / action sheet: `0 8px 40px rgba(0,0,0,0.16)`
+- Dialog: `0 4px 30px rgba(0,0,0,0.3)`
 
 ## Interaction
 All press states use `:active` pseudo-class.
@@ -463,31 +622,3 @@ All press states use `:active` pseudo-class.
 - PIN screen: node-id `2690-674`
 - Statements filter: node-id `2786-1509`
 
----
-
-## Screens Status
-- [x] Home (`app.html`)
-- [x] Cards (`app.html`)
-- [x] Menu cards (`app.html`)
-- [x] Card detail (`app.html`)
-- [x] Card transactions (`app.html`)
-- [x] Safety settings (`app.html`)
-- [x] Photo pay (`app.html`)
-- [x] Payment type screen (`app.html`)
-- [x] Quick pay screen (`app.html`)
-- [x] New payment step 1 (`app.html`)
-- [x] Payment review step 2 (`app.html`)
-- [x] PIN / Authorization screen (`app.html`)
-- [x] Payment sent step 3 (`app.html`)
-- [x] Select client (`app.html`)
-- [x] Partners (`app.html`)
-- [x] Accounts list (`app.html`)
-- [x] Offers (`app.html`)
-- [x] Menu (`app.html`)
-- [x] Account detail (`app.html`)
-- [x] Account transactions (`app.html`)
-- [x] Transaction detail (`app.html`)
-- [x] Statements & documents (`app.html`)
-- [x] Statements filter (`app.html`)
-- [x] Statements 2 (`app.html`)
-- [x] Design system (`design-system.html`)

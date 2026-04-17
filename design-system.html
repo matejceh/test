@@ -208,20 +208,24 @@
     .toggle input:checked ~ .toggle-knob { transform: translateX(21px); }
 
     /* Action sheet */
-    .action-sheet-group { position: relative; background: rgba(245,245,245,0.6); backdrop-filter: blur(40px) saturate(180%); -webkit-backdrop-filter: blur(40px) saturate(180%); border-radius: 34px; padding: 14px; display: flex; flex-direction: column; gap: 10px; box-shadow: 0 8px 40px rgba(0,0,0,0.16); }
-    .action-sheet-btn { width: 100%; border: none; height: 48px; padding: 13px 16px; font-family: 'Inter', sans-serif; font-size: 17px; font-weight: 500; color: #fff; cursor: pointer; text-align: center; border-radius: 100px; background: #0088ff; }
-    .action-sheet-btn:active { opacity: 0.75; }
-    .action-sheet-cancel { background: rgba(120,120,128,0.16); color: #000; }
+    .action-sheet-group { background: #fff; border-radius: 14px; overflow: hidden; margin-bottom: 8px; }
+    .action-sheet-btn { width: 100%; border: none; border-top: 0.5px solid #eee; background: transparent; height: 56px; padding: 0 16px; font-family: 'Inter', sans-serif; font-size: 17px; font-weight: 400; color: #2870ed; cursor: pointer; text-align: center; transition: background 0.15s; }
+    .action-sheet-btn:first-child { border-top: none; }
+    .action-sheet-btn:active { background: rgba(68,68,68,0.06); }
+    .action-sheet-cancel { font-weight: 600; }
 
     /* Dialog */
-    .dialog { background: rgba(245,245,245,0.6); backdrop-filter: blur(40px) saturate(180%); border-radius: 34px; box-shadow: 0 8px 40px rgba(0,0,0,0.16); overflow: hidden; padding: 20px 14px 14px; display: flex; flex-direction: column; gap: 16px; }
-    .dialog-body { display: flex; flex-direction: column; gap: 10px; padding: 0 8px; }
-    .dialog-title { font-size: 16px; font-weight: 600; color: var(--text); }
-    .dialog-input { width: 100%; background: rgba(120,120,128,0.12); border: none; border-radius: 12px; padding: 12px 14px; font-family: 'Inter', sans-serif; font-size: 15px; color: var(--text); outline: none; }
-    .dialog-buttons { display: flex; gap: 16px; }
-    .dialog-btn { flex: 1; border: none; border-radius: 100px; height: 48px; font-family: 'Inter', sans-serif; font-size: 15px; font-weight: 500; cursor: pointer; }
-    .dialog-btn-cancel { background: rgba(120,120,128,0.16); color: var(--text); }
-    .dialog-btn-confirm { background: #0088ff; color: #fff; }
+    .dialog { background: #fff; border-radius: 14px; overflow: hidden; box-shadow: 0 4px 30px rgba(0,0,0,0.18); display: flex; flex-direction: column; }
+    .dialog-body { display: flex; flex-direction: column; gap: 6px; padding: 20px 16px 16px; text-align: center; }
+    .dialog-title { font-size: 17px; font-weight: 600; color: var(--text); line-height: 1.3; }
+    .dialog-input { width: 100%; background: #fff; border: 1px solid #444; border-radius: 8px; padding: 10px 12px; font-family: 'Inter', sans-serif; font-size: 16px; color: var(--text); outline: none; margin-top: 6px; text-align: left; }
+    .dialog-input:focus { border: 2px solid #2870ed; }
+    .dialog-buttons { display: flex; border-top: 0.5px solid #eee; }
+    .dialog-btn { flex: 1; border: none; background: transparent; height: 44px; font-family: 'Inter', sans-serif; font-size: 17px; font-weight: 400; color: #2870ed; cursor: pointer; transition: background 0.15s; }
+    .dialog-btn + .dialog-btn { border-left: 0.5px solid #eee; }
+    .dialog-btn:active { background: rgba(68,68,68,0.06); }
+    .dialog-btn-cancel { font-weight: 400; }
+    .dialog-btn-confirm { font-weight: 600; }
 
     /* Menu list item */
     .menu-list-item { cursor: pointer; transition: background 0.15s; -webkit-tap-highlight-color: transparent; }
@@ -251,8 +255,12 @@
 <body>
 <div class="ds-page">
 
-  <div>
+  <div style="display:flex;align-items:baseline;gap:16px;flex-wrap:wrap;">
     <h1>Sparkasse <span>Design System</span></h1>
+    <div style="margin-left:auto;display:flex;gap:16px;">
+      <a href="app.html" style="font-size:13px;font-weight:500;color:#2870ed;text-decoration:none;">Prototype</a>
+      <a href="flow.html" style="font-size:13px;font-weight:500;color:#2870ed;text-decoration:none;">Screen Flow</a>
+    </div>
   </div>
 
   <!-- ════════ COLORS ════════ -->
@@ -727,40 +735,40 @@
 
   <!-- ════════ ACTION SHEET ════════ -->
   <div class="ds-section">
-    <div class="ds-section-title">Action Sheet — iOS 26 Liquid Glass</div>
+    <div class="ds-section-title">Action Sheet — iOS Native</div>
     <div class="ds-card">
-      <div class="ds-card-title">Options + cancel group</div>
-      <div style="background:#aab4c8;padding:16px;border-radius:16px;max-width:370px;">
+      <div class="ds-card-title">Options group + cancel group (separate)</div>
+      <div style="background:#aab4c8;padding:16px 16px 8px;border-radius:16px;max-width:370px;">
         <div class="action-sheet-group">
           <button class="action-sheet-btn">Details</button>
           <button class="action-sheet-btn">Transactions</button>
           <button class="action-sheet-btn">Safety settings</button>
+        </div>
+        <div class="action-sheet-group">
           <button class="action-sheet-btn action-sheet-cancel">Cancel</button>
         </div>
       </div>
       <div class="ds-code">.action-sheet-group {
-  background: rgba(245,245,245,0.6);
-  backdrop-filter: blur(40px) saturate(180%);
-  border-radius: 34px; padding: 14px;
-  display: flex; flex-direction: column;
-  gap: 10px;
-  box-shadow: 0 8px 40px rgba(0,0,0,0.16);
+  background: #fff; /* var(--surface) */
+  border-radius: 14px; overflow: hidden;
+  margin-bottom: 8px;
 }
 .action-sheet-btn {
-  height: 48px; border-radius: 100px;
-  font-size: 17px; font-weight: 500;
-  background: #0088ff; color: #fff;
+  width: 100%; border: none;
+  border-top: 0.5px solid #eee; /* var(--border) */
+  background: transparent; height: 56px;
+  font-size: 17px; font-weight: 400;
+  color: #2870ed; /* var(--primary) */
+  text-align: center;
 }
-.action-sheet-cancel {
-  background: rgba(120,120,128,0.16);
-  color: #000;
-}</div>
+.action-sheet-btn:first-child { border-top: none; }
+.action-sheet-cancel { font-weight: 600; }</div>
     </div>
   </div>
 
   <!-- ════════ DIALOG ════════ -->
   <div class="ds-section">
-    <div class="ds-section-title">Dialog — iOS 26 Liquid Glass</div>
+    <div class="ds-section-title">Dialog — iOS Native</div>
     <div class="ds-card">
       <div class="ds-card-title">Input dialog with cancel + confirm</div>
       <div style="background:#aab4c8;padding:24px 16px;border-radius:16px;max-width:370px;">
@@ -776,19 +784,30 @@
         </div>
       </div>
       <div class="ds-code">.dialog {
-  background: rgba(245,245,245,0.6);
-  backdrop-filter: blur(40px) saturate(180%);
-  border-radius: 34px;
-  padding: 20px 14px 14px;
+  background: #fff; /* var(--surface) */
+  border-radius: 14px; overflow: hidden;
+  box-shadow: 0 4px 30px rgba(0,0,0,0.18);
+  display: flex; flex-direction: column;
 }
-.dialog-btn-cancel {
-  background: rgba(120,120,128,0.16);
-  border-radius: 100px; height: 48px;
+.dialog-body {
+  padding: 20px 16px 16px; text-align: center;
 }
-.dialog-btn-confirm {
-  background: #0088ff; color: #fff;
-  border-radius: 100px; height: 48px;
-}</div>
+.dialog-title { font-size: 17px; font-weight: 600; }
+.dialog-input {
+  border: 1px solid #444; /* --input-border */
+  border-radius: 8px; padding: 10px 12px;
+  font-size: 16px;
+}
+.dialog-buttons {
+  display: flex; border-top: 0.5px solid #eee;
+}
+.dialog-btn {
+  flex: 1; background: transparent; height: 44px;
+  font-size: 17px; color: #2870ed; /* --primary */
+}
+.dialog-btn + .dialog-btn { border-left: 0.5px solid #eee; }
+.dialog-btn-cancel { font-weight: 400; }
+.dialog-btn-confirm { font-weight: 600; }</div>
     </div>
   </div>
 
@@ -1126,6 +1145,103 @@ padding: 0 16px;
           <span style="font-size:10px;color:rgba(68,68,68,0.5);">cards.svg</span>
         </div>
       </div>
+    </div>
+  </div>
+
+  <!-- ════════ TX ITEM LARGE ════════ -->
+  <div class="ds-section">
+    <div class="ds-section-title">TX Item Large — Account / Card Transactions</div>
+    <div class="ds-card">
+      <div class="ds-card-title">.tx-item-lg — date + name + amount row</div>
+      <div style="background:var(--bg);border-radius:12px;overflow:hidden;max-width:370px;padding:0 16px;">
+        <div style="display:flex;align-items:center;gap:4px;padding:12px 0;border-bottom:1px solid #eee;">
+          <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:4px;">
+            <div style="font-size:12px;color:rgba(68,68,68,0.5);">20.03.2026</div>
+            <div style="font-size:14px;font-weight:500;">Plača - Podjetje d.o.o.</div>
+          </div>
+          <div style="font-size:15px;font-weight:600;color:#028661;">2.450,00 <span style="font-size:11px;font-weight:500;">EUR</span></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:4px;padding:12px 0;border-bottom:1px solid #eee;">
+          <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:4px;">
+            <div style="font-size:12px;color:rgba(68,68,68,0.5);">19.03.2026</div>
+            <div style="font-size:14px;font-weight:500;">Spar Slovenija</div>
+          </div>
+          <div style="font-size:15px;font-weight:600;">-67,30 <span style="font-size:11px;font-weight:500;">EUR</span></div>
+        </div>
+      </div>
+      <div class="ds-code">.tx-item-lg {
+  display: flex; align-items: center; gap: 4px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border);
+  margin: 0 -16px; padding-left: 16px; padding-right: 16px;
+  cursor: pointer; transition: background 0.15s;
+}
+.tx-item-lg-left {
+  flex: 1; min-width: 0;
+  display: flex; flex-direction: column; gap: 4px;
+}
+/* .tx-date → font-size:12px, color:var(--text-faint)  */
+/* .tx-name → font-size:14px, font-weight:500           */
+/* .tx-amount.positive → color:var(--success)           */</div>
+    </div>
+  </div>
+
+  <!-- ════════ TX FLOW SUMMARY ════════ -->
+  <div class="ds-section">
+    <div class="ds-section-title">TX Flow Summary — Inflow / Outflow Panel</div>
+    <div class="ds-card">
+      <div class="ds-card-title">.tx-flow-summary — two-column inflow/outflow card</div>
+      <div style="background:var(--bg);border-radius:12px;padding:16px;max-width:370px;">
+        <div style="background:#fff;border-radius:12px;display:grid;grid-template-columns:1fr 1px 1fr;margin-bottom:8px;">
+          <div style="padding:12px 14px;display:flex;flex-direction:column;align-items:center;gap:3px;">
+            <div style="font-size:11px;font-weight:500;color:rgba(68,68,68,0.8);">↑ Inflow</div>
+            <div style="font-size:15px;font-weight:600;color:#028661;">2.650,00 <span style="font-size:11px;font-weight:500;">EUR</span></div>
+          </div>
+          <div style="background:#eee;margin:12px 0;"></div>
+          <div style="padding:12px 14px;display:flex;flex-direction:column;align-items:center;gap:3px;">
+            <div style="font-size:11px;font-weight:500;color:rgba(68,68,68,0.8);">↓ Outflow</div>
+            <div style="font-size:15px;font-weight:600;color:#BC3B51;">456,83 <span style="font-size:11px;font-weight:500;">EUR</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="ds-code">.tx-flow-summary {
+  background: var(--surface);
+  border-radius: 12px;
+  display: grid;
+  grid-template-columns: 1fr 1px 1fr;
+  margin-bottom: 8px;
+}
+.tx-flow-divider { background: #eee; margin: 12px 0; }
+.tx-flow-card {
+  padding: 12px 14px;
+  display: flex; flex-direction: column;
+  align-items: center; gap: 3px;
+}
+.tx-flow-label { font-size: 11px; font-weight: 500; color: var(--text-muted); }
+.tx-flow-amount { font-size: 15px; font-weight: 600; }
+.tx-flow-amount.inflow  { color: var(--success); }
+.tx-flow-amount.outflow { color: var(--danger);  }</div>
+    </div>
+  </div>
+
+  <!-- ════════ DARK MODE ════════ -->
+  <div class="ds-section">
+    <div class="ds-section-title">Dark Mode — CSS Variable Overrides</div>
+    <div class="ds-card">
+      <div class="ds-card-title">Toggle via <code>data-theme="dark"</code> on &lt;html&gt; — toggleDarkMode()</div>
+      <div class="ds-code">/* Light mode (:root) */
+--primary: #2870ed;   --text: #444;         --bg: #f4f6fa;
+--success: #028661;   --danger: #BC3B51;    --border: #eee;
+--surface: #fff;      --body-bg: #dde3ed;   --input-border: #444;
+--text-muted: rgba(68,68,68,0.8);           --border-strong: #ddd;
+--nav-bg: var(--primary);                   --menu-hover: rgba(68,68,68,0.06);
+
+/* Dark mode ([data-theme="dark"]) */
+--primary: #6ba4fa;   --text: #e4e7f0;      --bg: #1a1e27;
+--success: #3ecf96;   --danger: #ff8a96;    --border: #2c3245;
+--surface: #252a36;   --body-bg: #0f1218;   --input-border: #4a5263;
+--text-muted: #8b95ad;                      --border-strong: #2c3245;
+--nav-bg: #1c2540;                          --menu-hover: rgba(255,255,255,0.06);</div>
     </div>
   </div>
 
